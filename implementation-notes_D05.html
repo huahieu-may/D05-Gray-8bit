@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D05 — Bộ đếm Gray 8-bit · Ghi chú thực hiện</title>
+<style>
+:root{
+  --bg:#ffffff; --fg:#1a1d21; --muted:#5c6570; --line:#e3e7eb;
+  --accent:#1f5fa9; --accent-soft:#eef4fb; --code-bg:#f5f7f9;
+  --ok:#137a4d; --ok-bg:#e8f6ee; --warn:#8a5a00; --warn-bg:#fdf4e2;
+  --bad:#a52020; --bad-bg:#fceded; --open:#7a5ba8; --open-bg:#f3eefa;
+  --maxw:960px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15181c; --fg:#e6e9ec; --muted:#98a2ad; --line:#2a2f36;
+    --accent:#6fa8e0; --accent-soft:#1c2733; --code-bg:#1b1f24;
+    --ok:#5cc08d; --ok-bg:#16291f; --warn:#d8a54a; --warn-bg:#2a2314;
+    --bad:#e88b8b; --bad-bg:#2b1a1a; --open:#b79ad6; --open-bg:#241d2e;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15181c; --fg:#e6e9ec; --muted:#98a2ad; --line:#2a2f36;
+  --accent:#6fa8e0; --accent-soft:#1c2733; --code-bg:#1b1f24;
+  --ok:#5cc08d; --ok-bg:#16291f; --warn:#d8a54a; --warn-bg:#2a2314;
+  --bad:#e88b8b; --bad-bg:#2b1a1a; --open:#b79ad6; --open-bg:#241d2e;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--bg); color:var(--fg);
+  font:16px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  -webkit-text-size-adjust:100%;
+}
+.wrap{max-width:var(--maxw); margin:0 auto; padding:0 16px 96px}
+header.doc{
+  border-bottom:1px solid var(--line); margin-bottom:28px; padding:36px 0 22px;
+}
+header.doc .eyebrow{
+  font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--muted); font-weight:600; margin-bottom:10px;
+}
+header.doc h1{font-size:clamp(24px,4.4vw,34px); line-height:1.25; margin:0 0 14px}
+.badges{display:flex; flex-wrap:wrap; gap:7px; margin-top:6px}
+.badge{
+  font-size:12.5px; padding:3px 10px; border-radius:999px;
+  border:1px solid var(--line); color:var(--muted); background:var(--accent-soft);
+  white-space:nowrap;
+}
+.badge.ok{color:var(--ok); background:var(--ok-bg); border-color:transparent}
+.badge.warn{color:var(--warn); background:var(--warn-bg); border-color:transparent}
+.badge.bad{color:var(--bad); background:var(--bad-bg); border-color:transparent}
+.badge.open{color:var(--open); background:var(--open-bg); border-color:transparent}
+nav.toc{
+  border:1px solid var(--line); border-radius:10px; padding:16px 20px;
+  margin:0 0 32px; background:var(--accent-soft);
+}
+nav.toc p{margin:0 0 8px; font-weight:700; font-size:13px; letter-spacing:.06em;
+  text-transform:uppercase; color:var(--muted)}
+nav.toc ul{margin:0; padding-left:20px}
+nav.toc li{margin:3px 0}
+nav.toc a{color:var(--fg); text-decoration:none}
+nav.toc a:hover{color:var(--accent); text-decoration:underline}
+nav.toc ul ul{padding-left:18px; font-size:14.5px}
+h2{font-size:22px; margin:40px 0 12px; padding-bottom:6px; border-bottom:1px solid var(--line)}
+h3{font-size:18px; margin:28px 0 8px}
+h4{font-size:16px; margin:22px 0 6px; color:var(--muted)}
+p{margin:12px 0}
+a{color:var(--accent)}
+ul,ol{padding-left:24px}
+li{margin:4px 0}
+code{
+  font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+  font-size:.9em; background:var(--code-bg); padding:1.5px 5px; border-radius:4px;
+}
+pre{
+  background:var(--code-bg); border:1px solid var(--line); border-radius:8px;
+  padding:14px 16px; overflow-x:auto; line-height:1.55; font-size:13.5px;
+}
+pre code{background:none; padding:0; font-size:inherit}
+blockquote{
+  margin:16px 0; padding:2px 18px; border-left:3px solid var(--accent);
+  background:var(--accent-soft); border-radius:0 8px 8px 0; color:var(--fg);
+}
+blockquote p{margin:10px 0}
+.tablewrap{overflow-x:auto; margin:16px 0; -webkit-overflow-scrolling:touch}
+table{border-collapse:collapse; width:100%; font-size:14.5px; min-width:420px}
+th,td{border:1px solid var(--line); padding:7px 11px; text-align:left; vertical-align:top}
+th{background:var(--accent-soft); font-weight:650; white-space:nowrap}
+tbody tr:nth-child(even) td{background:color-mix(in srgb, var(--code-bg) 55%, transparent)}
+hr{border:0; border-top:1px solid var(--line); margin:34px 0}
+footer.doc{
+  margin-top:56px; padding-top:18px; border-top:1px solid var(--line);
+  color:var(--muted); font-size:13.5px;
+}
+.themebtn{
+  position:fixed; right:14px; bottom:14px; z-index:10;
+  border:1px solid var(--line); background:var(--bg); color:var(--muted);
+  border-radius:999px; padding:8px 14px; font-size:13px; cursor:pointer;
+}
+.themebtn:hover{color:var(--fg)}
+@media (max-width:640px){
+  .wrap{padding:0 16px 72px}
+  header.doc{padding:26px 0 18px}
+  nav.toc{padding:14px 16px}
+}
+@media print{
+  .themebtn{display:none}
+  nav.toc{break-inside:avoid}
+  pre,table,blockquote{break-inside:avoid}
+  body{font-size:11pt}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="doc">
+  <div class="eyebrow">RTL2GDS · Đề D05 · Ghi chú thực hiện</div>
+  <h1>D05 — Bộ đếm Gray 8-bit · Ghi chú thực hiện</h1>
+  <div class="badges"><span class="badge ">D · Bộ đếm và chia tần</span><span class="badge ">Độ khó: Trung bình</span><span class="badge ">Loại mạch: Tuần tự</span><span class="badge ok">Mô phỏng: PASS</span><span class="badge ">Tổng hợp: 40 cell · 8 FF</span><span class="badge ">Đường tới hạn: 1,6 ns</span><span class="badge warn">Physical design: CHƯA CHẠY</span></div>
+</header>
+<nav class="toc"><p>Mục lục</p><ul><li><a href="#1-bai-toan-nay-thuc-chat-la-gi">1. Bài toán này thực chất là gì</a></li><li><a href="#2-ban-chat-ky-thuat-co-che-hoat-dong">2. Bản chất kỹ thuật — cơ chế hoạt động</a></li><li><a href="#3-doc-ma-nguon-rtl-lam-gi-tung-dong-quan-trong">3. Đọc mã nguồn: RTL làm gì, từng dòng quan trọng</a></li><li><a href="#4-vi-sao-chon-kien-truc-nay">4. Vì sao chọn kiến trúc này</a></li><li><a href="#5-cach-thuc-hien-lo-trinh-8-buoc-tu-dac-ta-toi-gdsii">5. Cách thực hiện — lộ trình 8 bước từ đặc tả tới GDSII</a></li><li><a href="#6-so-lieu-that-da-do-duoc-va-cach-doc-chung">6. Số liệu thật đã đo được và cách đọc chúng</a></li><li><a href="#7-tra-loi-cac-cau-hoi-ky-thuat-cua-charter-muc-2">7. Trả lời các câu hỏi kỹ thuật của Charter (mục 2)</a></li><li><a href="#8-tra-loi-cau-phan-tich-rieng-charter-muc-9">8. Trả lời câu phân tích riêng (Charter mục 9)</a></li><li><a href="#9-nhung-cho-sinh-vien-hay-sai-va-cach-phat-hien">9. Những chỗ sinh viên hay sai và cách phát hiện</a></li><li><a href="#10-cau-hoi-mentor-nen-dat-khi-bao-ve">10. Câu hỏi mentor nên đặt khi bảo vệ</a></li><li><a href="#11-gioi-han-da-chung-minh-duoc-gi-chua-chung-minh-duoc-gi">11. Giới hạn: đã chứng minh được gì, chưa chứng minh được gì</a></li></ul></nav>
+<main>
+<h2 id="1-bai-toan-nay-thuc-chat-la-gi">1. Bài toán này thực chất là gì</h2>
+<p>Nhìn qua tên đề, D05 trông như một bài tập mã hoá: "đếm rồi đổi sang mã Gray". Nhưng bối
+cảnh Charter mục 1 mới chỉ ra bản chất: <em>bộ mã hoá góc quay tuyệt đối</em>. Đĩa mã hoá gắn trên
+trục quay, cảm biến đọc vị trí, và giá trị vị trí phải đi từ miền clock của cảm biến sang
+miền clock của bo điều khiển.</p>
+<p>Vấn đề thật không nằm ở phép đếm. Phép đếm 8-bit là bài tập tuần đầu. Vấn đề nằm ở chỗ:
+<strong>khi N dây tín hiệu đi qua ranh giới hai miền xung nhịp, chúng không thể đổi mức đồng thời
+tuyệt đối.</strong> Mỗi dây có độ trễ riêng, bên nhận lấy mẫu tại một thời điểm do clock của nó
+quyết định. Nếu truyền nhị phân, bước <code>127 → 128</code> làm 8 dây đổi cùng lúc, và bên nhận có
+thể bắt trúng một tổ hợp trung gian bất kỳ trong 256 khả năng — kể cả <code>255</code>. Sai số không
+bị chặn.</p>
+<p>Mã Gray biến bài toán "không chặn được sai số" thành "sai số ≤ 1 nấc": mỗi bước chỉ <strong>một</strong>
+dây đổi, nên mẫu xấu nhất là giá trị cũ hoặc giá trị mới, không có gì ở giữa. Đó là toàn bộ
+lý do tồn tại của D05, và là lý do Charter mục 9 bắt kiểm tính chất đó <strong>bằng mô phỏng đủ
+256 bước</strong> chứ không cho lập luận suông.</p>
+<h2 id="2-ban-chat-ky-thuat-co-che-hoat-dong">2. Bản chất kỹ thuật — cơ chế hoạt động</h2>
+<p>Có ba cơ chế chồng lên nhau, và phải tách bạch mới hiểu đúng đề.</p>
+<p><strong>Cơ chế 1 — vì sao <code>b ^ (b &gt;&gt; 1)</code> cho ra mã đổi một bit.</strong> Xét <code>b → b+1</code>. Gọi <code>k</code> là số
+bit <code>1</code> liên tiếp ở đuôi của <code>b</code>. Phép <code>+1</code> lật <code>k</code> bit đuôi từ <code>1</code> về <code>0</code> và lật bit thứ
+<code>k</code> từ <code>0</code> lên <code>1</code>. Bây giờ áp công thức <code>g[i] = b[i+1] ^ b[i]</code>: mọi cặp <code>(b[i+1], b[i])</code>
+nằm hoàn toàn trong vùng đuôi vừa lật đều lật <strong>cả hai</strong> bit, nên XOR không đổi. Cặp nằm
+hoàn toàn ngoài vùng lật cũng không đổi. <strong>Chỉ đúng một cặp</strong> — cặp bắc qua biên, tức
+<code>(b[k+1], b[k])</code> — có đúng một vế đổi. Vậy đúng một bit Gray đổi, và nó là bit thứ <code>k</code>. Đây
+là chứng minh, không phải quan sát thực nghiệm; mô phỏng 256 bước là để xác nhận rằng RTL
+hiện thực đúng cái chứng minh này.</p>
+<p><strong>Cơ chế 2 — vòng kín và nhánh cụt.</strong> Đây là chỗ quyết định tốc độ. <code>binary_state</code> quay về
+incrementer (<strong>vòng kín</strong>), còn cây XOR chỉ đi ra cổng (<strong>nhánh cụt</strong>). Độ trễ một chu kỳ
+là <strong>max</strong> của hai nhánh, không phải <strong>tổng</strong>. Nếu thiết kế ngược lại — lưu thẳng Gray như
+<code>d05_direct_gray.sv</code> — thì phép giải mã Gray (một chuỗi XOR nối tiếp 7 tầng) rơi <strong>vào
+trong</strong> vòng kín và cộng thẳng vào đường tới hạn. Cùng 8 flip-flop, cùng chức năng, nhưng
+vị trí của phép biến đổi so với vòng hồi tiếp quyết định tất cả.</p>
+<p><strong>Cơ chế 3 — phép <code>+1</code> không phải phép <code>a+b</code>.</strong> Carry ra khỏi tầng <code>i</code> của <code>+1</code> là
+<code>enable &amp; b[0] &amp; b[1] &amp; … &amp; b[i]</code>, một tích AND thuần. Tích AND <strong>kết hợp được</strong>, nên công
+cụ dựng cây thay vì chuỗi: <code>(b1&amp;b0)</code> → <code>&amp; (b3&amp;b2)</code> → <code>&amp; (b5&amp;b4)</code>. Đo được <strong>4 mức</strong> cho 8
+bit, không phải 8. Bộ cộng ripple của đề A01 không có đặc quyền này vì carry của nó là
+<code>a&amp;b | (a^b)&amp;cin</code>, phụ thuộc theo thứ tự. <strong>Đây là điểm phân biệt A01 với D05</strong> mà sinh
+viên hay nhầm: cùng gọi là "chuỗi carry" nhưng một cái <code>O(N)</code>, một cái <code>O(log N)</code>.</p>
+<h2 id="3-doc-ma-nguon-rtl-lam-gi-tung-dong-quan-trong">3. Đọc mã nguồn: RTL làm gì, từng dòng quan trọng</h2>
+<pre><code class="language-verilog">always_comb begin                       // d05_core.sv, dòng 10–14
+    binary_next = binary_state;
+    if (enable)
+        binary_next = binary_state + 8'd1;
+end
+</code></pre>
+<p>Viết theo kiểu "gán mặc định rồi ghi đè". Nhờ có dòng gán mặc định, <code>binary_next</code> được gán
+trên <strong>mọi nhánh</strong> → không sinh latch. Đây là mẫu viết đúng mà sinh viên nên bắt chước.</p>
+<pre><code class="language-verilog">always_ff @(posedge clk) begin          // dòng 16–21
+    if (!rst_n)  binary_state &lt;= 8'h00;
+    else         binary_state &lt;= binary_next;
+end
+</code></pre>
+<p><code>rst_n</code> <strong>không</strong> nằm trong danh sách nhạy → reset <strong>đồng bộ</strong>. Hệ quả kiểm chứng được
+trong netlist: không có cell <code>dfrtp_1</code> nào; thay vào đó <code>rst_n</code> bị AND vào đường <code>D</code>, ví dụ
+<code>and2_0 _27_ (.A(rst_n), .B(_08_), .X(_00_))</code>. Muốn reset bất đồng bộ phải viết
+<code>always_ff @(posedge clk or negedge rst_n)</code> — khác một dòng, khác hẳn phần cứng.</p>
+<pre><code class="language-verilog">always_comb begin                       // dòng 23–25
+    gray_out = binary_state ^ (binary_state &gt;&gt; 1);
+end
+</code></pre>
+<p>Một dòng, 7 phép XOR, độ sâu 1. Vì biểu thức <strong>chỉ đọc <code>binary_state</code></strong>, đây là máy Moore —
+<code>gray_out</code> không phụ thuộc <code>enable</code>, nên không nhấp nháy theo đầu vào. Với một khối gửi tín
+hiệu qua ranh giới clock, tính chất Moore không phải chi tiết trang trí mà là điều kiện cần.</p>
+<h2 id="4-vi-sao-chon-kien-truc-nay">4. Vì sao chọn kiến trúc này</h2>
+<p>Tên đề không chỉ định kiến trúc, nên cả hai cách đều hợp lệ về hình thức. Lựa chọn dựa trên
+ba căn cứ đo được:</p>
+<ol>
+<li><strong>Vị trí của phép biến đổi.</strong> Kiến trúc A đặt phép mã hoá ngoài vòng hồi tiếp; kiến trúc
+   B đặt phép giải mã bên trong. A thắng về đường tới hạn (§2, cơ chế 2).</li>
+<li><strong>Charter mục 4 đòi xuất cả hai dạng.</strong> Ánh xạ chân yêu cầu <code>uo_out</code> = Gray <strong>và</strong>
+   <code>uio_out</code> = nhị phân tương đương. Với A, giá trị nhị phân đã có sẵn trong thanh ghi —
+   xuất ra tốn <strong>0 cell</strong>. Với B, muốn có nhị phân phải trả tiền cho cả bộ giải mã.</li>
+<li><strong>Ràng buộc 8 ô nhớ.</strong> Cả A và B đều 8 FF, nên tiêu chí này không phân định — và đó
+   chính là lý do phải dùng hai căn cứ trên.</li>
+</ol>
+<h2 id="5-cach-thuc-hien-lo-trinh-8-buoc-tu-dac-ta-toi-gdsii">5. Cách thực hiện — lộ trình 8 bước từ đặc tả tới GDSII</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Bước</th>
+<th style="text-align: center;">Trạng thái</th>
+<th>Bằng chứng</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Chốt đặc tả và invariant từ Charter mục 1/4/8/9</td>
+<td style="text-align: center;">✅</td>
+<td><code>02_SPECIFICATION/functional_spec.md</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td>Viết mô hình chuẩn Python kiểm <strong>tính chất</strong>, không kiểm mạch</td>
+<td style="text-align: center;">✅</td>
+<td><code>python_reference_run.log</code> — PASS</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Viết RTL tối giản, tách 3 khối: incrementer / thanh ghi / mã hoá</td>
+<td style="text-align: center;">✅</td>
+<td><code>d05_core.sv</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td>Mô phỏng RTL với testbench tự kiểm, đủ 256 bước</td>
+<td style="text-align: center;">✅</td>
+<td><code>simulation.log</code> — PASS, <code>$finish</code> tại 2606</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Tổng hợp Yosys 0.33 + <code>sky130_fd_sc_hd</code>, đọc lại số cell/FF</td>
+<td style="text-align: center;">✅</td>
+<td>40 cell · 8 FF · 369,104 µm²</td>
+</tr>
+<tr>
+<td>6</td>
+<td>STA với SDC có clock thật, đọc đường tới hạn</td>
+<td style="text-align: center;">✅</td>
+<td>slack 8,28 ns · WNS 0,00</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Ước lượng công suất, phân tách tuần tự / tổ hợp</td>
+<td style="text-align: center;">✅</td>
+<td>3,62e-05 W · 94,6 % / 5,4 %</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Physical design (floorplan → GDS) bằng LibreLane + sky130A</td>
+<td style="text-align: center;">⬜</td>
+<td>cần PDK; <code>scripts/04_run_librelane.sh</code></td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="6-so-lieu-that-da-do-duoc-va-cach-doc-chung">6. Số liệu thật đã đo được và cách đọc chúng</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Chỉ số</th>
+<th style="text-align: right;">Giá trị</th>
+<th><strong>Chứng minh</strong> điều gì</th>
+<th><strong>Không chứng minh</strong> điều gì</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>40 cell</td>
+<td style="text-align: right;">40</td>
+<td>Thiết kế nhỏ hơn 4× ước lượng Charter (170–240)</td>
+<td>Không nói gì về tốc độ</td>
+</tr>
+<tr>
+<td>8 FF</td>
+<td style="text-align: right;">8</td>
+<td><strong>Thoả</strong> "dấu hiệu làm đúng" Charter mục 10</td>
+<td>Không chứng minh mã Gray đúng</td>
+</tr>
+<tr>
+<td>369,104 µm²</td>
+<td style="text-align: right;"></td>
+<td>Diện tích logic sau tổng hợp</td>
+<td><strong>Không</strong> phải diện tích die — chưa có floorplan</td>
+</tr>
+<tr>
+<td>slack 8,28 ns</td>
+<td style="text-align: right;"></td>
+<td>Với giả định chu kỳ 10 ns, <code>input_delay</code> 1 ns, clock lý tưởng, netlist đáp ứng setup</td>
+<td><strong>Không</strong> cho phép nói "chạy được ở 100 MHz". Chưa có RC dây, chưa có CTS, một góc PVT duy nhất</td>
+</tr>
+<tr>
+<td>arrival 1,60 ns</td>
+<td style="text-align: right;"></td>
+<td>Trong đó <strong>1,00 ns là giả định <code>set_input_delay</code></strong>, chỉ 0,60 ns là logic thật</td>
+<td>Không phải độ trễ nội tại của khối</td>
+</tr>
+<tr>
+<td>WNS/TNS 0,00</td>
+<td style="text-align: right;"></td>
+<td>Không đường nào âm slack</td>
+<td>Chỉ ở góc <code>tt_025C_1v80</code></td>
+</tr>
+<tr>
+<td>3,62e-05 W</td>
+<td style="text-align: right;"></td>
+<td>Ước lượng sau tổng hợp</td>
+<td><strong>Không</strong> phải công suất chip thật — chưa có clock tree, chưa có IO</td>
+</tr>
+<tr>
+<td>94,6 % tuần tự</td>
+<td style="text-align: right;"></td>
+<td>8 FF ăn gần hết công suất; 1 FF ≈ 70 cell tổ hợp</td>
+<td>Không bao gồm công suất cây clock (hàng <code>Clock</code> = 0,0 % vì cây chưa tồn tại)</td>
+</tr>
+<tr>
+<td>Mô phỏng PASS</td>
+<td style="text-align: right;"></td>
+<td>RTL khớp <code>d05_reference.sv</code> ở 261 điểm lấy mẫu</td>
+<td><strong>Không</strong> chứng minh INV-3 — xem §9</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="7-tra-loi-cac-cau-hoi-ky-thuat-cua-charter-muc-2">7. Trả lời các câu hỏi kỹ thuật của Charter (mục 2)</h2>
+<p><strong>Câu 1 — Bằng chứng nào chứng minh mỗi bước chỉ đổi đúng một bit: chạy đủ 256 bước hay
+lập luận?</strong> Cần <strong>cả hai, và chúng chứng minh hai thứ khác nhau</strong>. Lập luận toán học (§2,
+cơ chế 1) chứng minh <em>công thức</em> Gray có tính chất đó — đúng cho mọi <code>N</code>, không cần chạy gì.
+Mô phỏng 256 bước chứng minh <em>RTL này</em> hiện thực đúng công thức đó — đây là kiểm chứng
+hiện thực, không phải kiểm chứng toán học. Hiện trạng hồ sơ: lập luận có; kiểm 256 bước
+<strong>có trong <code>reference_model.py</code></strong> (dòng 33–37) nhưng <strong>chưa có trong mô phỏng RTL</strong>, vì
+<code>popcount8</code> được khai báo mà không được gọi. Đây là điểm cần sửa.</p>
+<p><strong>Câu 2 — Giữ nhị phân rồi chuyển, hay giữ luôn Gray, khác nhau bao nhiêu cell?</strong> Kiến trúc
+A đo được <strong>40 cell / 8 FF / 369,104 µm²</strong>. Kiến trúc B (<code>d05_direct_gray.sv</code>) <strong>chưa được
+tổng hợp</strong> → ⬜ chưa có số. Chỉ được phát biểu định tính: B có cùng 8 FF nhưng thêm một bộ
+giải mã Gray nối tiếp 7 tầng nằm <strong>trong vòng hồi tiếp</strong>, nên nhiều cell hơn và chậm hơn.
+Muốn có số: chạy lại Yosys với <code>-top d05_direct_gray</code>. Chi tiết ở <code>tradeoff.md</code> §4.</p>
+<p><strong>Câu 3 — Vì sao mã Gray quan trọng khi qua hai miền xung nhịp (liên hệ J01)?</strong> Vì nó chặn
+<strong>biên độ</strong> sai số, chứ không chặn xác suất sai. Bên nhận vẫn <strong>bắt buộc</strong> phải có bộ đồng
+bộ 2 tầng FF (việc của đề J01) để xử lý metastability. Hai cơ chế giải quyết hai vấn đề
+khác nhau: đồng bộ 2 tầng lo <em>tín hiệu không ổn định</em>; mã Gray lo <em>nhiều dây đổi không cùng
+lúc</em>. Bỏ cái nào cũng hỏng.</p>
+<h2 id="8-tra-loi-cau-phan-tich-rieng-charter-muc-9">8. Trả lời câu phân tích riêng (Charter mục 9)</h2>
+<p>Charter mục 9 buộc <strong>kiểm chứng tính chất "mỗi bước chỉ đổi một bit" bằng mô phỏng cho đủ
+256 bước</strong>. Trả lời trung thực bằng số liệu:</p>
+<ul>
+<li><strong>Đã có:</strong> <code>reference_model.py</code> chạy PASS, log ghi rõ <em>"All 256 Gray states are unique"</em>
+  và <em>"All 256 cyclic adjacent transitions have Hamming distance 1"</em>. Đoạn mã tương ứng là
+  dòng 30–37, có kiểm cả bước quay vòng <code>255 → 0</code> (<code>hamming(sequence[255], sequence[0]) == 1</code>).</li>
+<li><strong>Đã có:</strong> mô phỏng RTL phủ đủ 256 trạng thái — đếm được <strong>261 lần <code>check()</code></strong>, trong đó
+  256 lần phủ <code>binary_state = 0…255</code> rồi trở về 0 (<code>$finish</code> tại 2606 ns = 261 cạnh lên × 10 ns</li>
+<li>1 ns, khớp log).</li>
+<li><strong>CHƯA có:</strong> mô phỏng RTL <strong>không</strong> kiểm Hamming distance. Nó chỉ so <code>gray_out === gray_ref</code>
+  với một mô hình chuẩn <strong>cùng thuật toán</strong>. Nếu công thức Gray sai giống nhau ở cả hai file,
+  testbench vẫn PASS.</li>
+</ul>
+<p><strong>Kết luận phải ghi vào báo cáo:</strong> tính chất Gray đã được chứng minh trên <strong>mô hình Python</strong>
+với đủ 256 bước, <strong>chưa</strong> được chứng minh trên <strong>RTL</strong>. Bản vá tối thiểu (4 dòng, dùng lại
+<code>popcount8</code> có sẵn) nằm ở <code>corner_cases.md</code> §4 — <strong>chưa áp dụng</strong>, chờ duyệt.</p>
+<p><strong>Vì sao tính chất này quan trọng:</strong> ở ranh giới hai miền clock, xác suất lấy mẫu trúng lúc
+tín hiệu đang đổi không thể đưa về 0. Cái có thể làm được là chặn <strong>hậu quả</strong>. Với nhị phân,
+hậu quả xấu nhất là đọc ra một trong 256 giá trị bất kỳ; với Gray, hậu quả xấu nhất là lệch
+<strong>một nấc</strong> — vẫn dùng được cho vòng điều khiển vị trí.</p>
+<h2 id="9-nhung-cho-sinh-vien-hay-sai-va-cach-phat-hien">9. Những chỗ sinh viên hay sai và cách phát hiện</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Sai lầm</th>
+<th>Hậu quả</th>
+<th>Phát hiện bằng bằng chứng nào</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Chỉ chạy 10–20 bước rồi kết luận</td>
+<td>Bỏ lọt lỗi quay vòng và lớp carry dài. Lớp <code>k=7</code> và <code>k=8</code> <strong>mỗi lớp chỉ xảy ra 1 lần</strong> trong 256 bước</td>
+<td>Đếm số lần <code>check()</code> trong log; <code>$finish</code> phải ở <strong>2606 ns</strong>, không phải vài trăm ns</td>
+</tr>
+<tr>
+<td>Coi PASS của testbench là đã chứng minh mã Gray đúng</td>
+<td>Lỗi đồng pha: <code>d05_reference.sv</code> và <code>d05_core.sv</code> cùng thuật toán</td>
+<td>Mở hai file, so dòng 9–17 với dòng 10–24. Giống nhau về cấu trúc → không độc lập</td>
+</tr>
+<tr>
+<td>Tưởng <code>popcount8</code> đang được dùng</td>
+<td>Tưởng INV-3 đã kiểm trên RTL</td>
+<td><code>grep popcount8 d05_core_tb.sv</code> → chỉ ra <strong>1 chỗ định nghĩa, 0 chỗ gọi</strong></td>
+</tr>
+<tr>
+<td>Tưởng reset là bất đồng bộ</td>
+<td>Bỏ cạnh clock trong lúc <code>rst_n=0</code> → trạng thái giữ nguyên <code>8'hxx</code></td>
+<td>Netlist không có cell <code>dfrtp_*</code>; <code>rst_n</code> xuất hiện làm đầu vào của <code>and2_0 _27_</code></td>
+</tr>
+<tr>
+<td>Đi tìm <code>binary_state[7]</code> trong netlist</td>
+<td>Tưởng tool làm mất một bit</td>
+<td>Netlist chỉ khai báo <code>binary_state[0..6]</code>; FF <code>_64_</code> xuất thẳng <code>gray_out[7]</code> vì <code>g[7] = b[7]</code></td>
+</tr>
+<tr>
+<td>Nói "khối chạy được ở 100 MHz" vì slack dương</td>
+<td>Phát biểu vượt mức</td>
+<td><code>timing.md</code> §3: clock lý tưởng, chưa RC, một góc PVT, chưa CTS</td>
+</tr>
+<tr>
+<td>Nhầm chuỗi carry <code>+1</code> với ripple-carry của A01</td>
+<td>Ước sai độ sâu (8 thay vì 4)</td>
+<td>STA đếm được <strong>4 cell</strong> trên đường tới hạn, không phải 8</td>
+</tr>
+<tr>
+<td>Coi <code>d05_direct_gray.sv</code> là một phần thiết kế</td>
+<td>Lẫn lộn số liệu</td>
+<td>Không module nào instantiate nó; <code>synth_stat.txt</code> chỉ có <code>=== d05_core ===</code></td>
+</tr>
+<tr>
+<td>Cho rằng Charter mục 4 đã thoả</td>
+<td>Bỏ sót cổng nhị phân bắt buộc</td>
+<td>Danh sách cổng trong RTL chỉ có 4 tín hiệu; xem cảnh báo C4-3</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="10-cau-hoi-mentor-nen-dat-khi-bao-ve">10. Câu hỏi mentor nên đặt khi bảo vệ</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Câu hỏi</th>
+<th>Đáp án mong đợi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Chỉ ra dòng RTL quyết định reset đồng bộ hay bất đồng bộ, và chỉ bằng chứng trong netlist</td>
+<td>Dòng 16 <code>always_ff @(posedge clk)</code> — không có <code>negedge rst_n</code>. Netlist: không cell <code>dfrtp_*</code>, <code>rst_n</code> AND vào <code>D</code> (<code>_27_</code>, <code>_46_</code>…)</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Vì sao đường tới hạn xuất phát từ <code>enable</code> chứ không từ một flip-flop?</td>
+<td>Vì SDC đặt <code>set_input_delay 1.0</code>, <code>enable</code> xuất phát tại 1,00 ns còn FF xuất phát tại ≈0,35 ns. Là hệ quả của <strong>giả định phân tích</strong>, không phải của thiết kế</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Độ sâu chuỗi carry là bao nhiêu và vì sao không phải 8?</td>
+<td>4 cell. Vì carry của <code>+1</code> là tích AND thuần, kết hợp được → cây thay vì chuỗi</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Đầu ra là Mealy hay Moore, bằng chứng ở tầng nào?</td>
+<td>Moore. RTL dòng 23–25 chỉ đọc <code>binary_state</code>; netlist: không cell lái <code>gray_out[*]</code> nào có <code>enable</code> ở đầu vào</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Testbench đã kiểm "mỗi bước đổi 1 bit" chưa?</td>
+<td><strong>Chưa.</strong> <code>popcount8</code> khai báo ở dòng 22–29 nhưng không được gọi. Tính chất chỉ được kiểm ở <code>reference_model.py</code></td>
+</tr>
+<tr>
+<td>6</td>
+<td>94,6 % công suất nằm ở nhóm tuần tự nghĩa là gì với quyết định thiết kế?</td>
+<td>1 FF ≈ 70 cell tổ hợp về công suất → thêm logic rẻ, thêm FF đắt → ràng buộc "8 ô nhớ" là đúng chỗ</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Vì sao <code>binary_state[7]</code> không có trong netlist?</td>
+<td>Vì <code>gray_out[7] == binary_state[7]</code> theo định nghĩa; Yosys gộp hai dây làm một, FF <code>_64_</code> xuất thẳng ra cổng</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Cell <code>lpflow_isobufsrc_1</code> ở đây làm nhiệm vụ gì?</td>
+<td>Làm cổng AND (<code>X = A &amp; ~SLEEP</code>). abc chọn theo hàm logic và chi phí, không theo tên cell. Nếu LibreLane cấm nhóm <code>lpflow_*</code> thì số cell sẽ đổi</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Mã Gray có thay thế được bộ đồng bộ 2 tầng không?</td>
+<td><strong>Không.</strong> Gray chặn biên độ sai số; đồng bộ 2 tầng xử lý metastability. Hai vấn đề khác nhau</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Charter mục 4 đã thoả chưa?</td>
+<td><strong>Chưa</strong> — thiếu cổng xuất giá trị nhị phân tương đương và thiếu vỏ Tiny Tapeout. Bản vá: thêm <code>output [7:0] binary_out</code>, tốn 0 cell</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="11-gioi-han-da-chung-minh-duoc-gi-chua-chung-minh-duoc-gi">11. Giới hạn: đã chứng minh được gì, chưa chứng minh được gì</h2>
+<p><strong>Đã chứng minh, có bằng chứng lưu trong hồ sơ:</strong>
+mô hình Python kiểm tính chất Gray cho đủ 256 bước (PASS); RTL mô phỏng khớp mô hình chuẩn
+tại 261 điểm lấy mẫu, phủ đủ 256 trạng thái kể cả bước quay vòng (PASS); RTL tổng hợp được
+ra 40 standard cell sky130 với đúng <strong>8</strong> flip-flop, thoả ràng buộc Charter mục 10; STA sau
+tổng hợp không có đường nào âm slack ở góc <code>tt_025C_1v80</code> với chu kỳ giả định 10 ns; đường
+tới hạn nằm trong incrementer, không nằm ở cây XOR Gray.</p>
+<p><strong>Chưa chứng minh được:</strong>
+(1) tính chất "mỗi bước đổi một bit" <strong>trên RTL</strong> — chỉ có trên mô hình Python;
+(2) giá trị nhị phân tương đương <strong>không quan sát được từ cổng ra</strong> → ca kiểm thử tương ứng
+của Charter mục 8 chưa thực hiện được qua giao diện;
+(3) hành vi ở mức gate-level — chưa mô phỏng netlist;
+(4) mọi kết quả vật lý: floorplan, placement, CTS, routing, DRC, LVS, GDS đều <strong>chưa chạy</strong>,
+nên không có diện tích die thật, không có skew thật, không có tần số tối đa thật;
+(5) các góc PVT khác <code>tt</code> (<code>ss</code>, <code>ff</code>) — chưa chạy, nên chưa biết lề hold ở góc nhanh;
+(6) kiến trúc thay thế B chưa có số liệu để so sánh định lượng.</p>
+<p><strong>Phát biểu không được dùng:</strong> "đã sign-off", "đã tape-out", "chạy được ở 100 MHz", "diện
+tích chip là 369 µm²". Câu đúng: <em>"sau tổng hợp logic, với các giả định đã nêu ở
+<code>02_SPECIFICATION/timing.md</code> §3, thiết kế đáp ứng setup với slack 8,28 ns."</em></p>
+<hr>
+<p><em>Phiên bản: v1.0 · Ngày: 2026-09-24</em></p>
+</main>
+<footer class="doc">
+  Tài liệu sinh từ <code>implementation-notes_D05.md</code>.
+  Mọi số liệu đều kèm công cụ, phiên bản và lệnh tái lập trong
+  <code>07_TRACEABILITY/evidence_index.md</code>.
+</footer>
+</div>
+<script>
+(function(){
+  var b=document.createElement('button');
+  b.className='themebtn'; b.type='button';
+  function lbl(){var t=document.documentElement.getAttribute('data-theme');
+    return t==='dark'?'Nen sang':(t==='light'?'Nen toi':'Doi nen');}
+  b.textContent=lbl();
+  try{var s=localStorage.getItem('rtl2gds-theme'); if(s)document.documentElement.setAttribute('data-theme',s);}catch(e){}
+  b.textContent=lbl();
+  b.addEventListener('click',function(){
+    var cur=document.documentElement.getAttribute('data-theme');
+    var mq=window.matchMedia('(prefers-color-scheme: dark)').matches;
+    var next=cur?(cur==='dark'?'light':'dark'):(mq?'light':'dark');
+    document.documentElement.setAttribute('data-theme',next);
+    try{localStorage.setItem('rtl2gds-theme',next);}catch(e){}
+    b.textContent=lbl();
+  });
+  document.body.appendChild(b);
+})();
+</script>
+</body>
+</html>

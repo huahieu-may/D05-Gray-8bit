@@ -1,0 +1,3 @@
+D05 reference model PASS
+All 256 Gray states are unique.
+All 256 cyclic adjacent transitions have Hamming distance 1.
