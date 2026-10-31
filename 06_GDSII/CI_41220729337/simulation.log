@@ -1,0 +1,7 @@
+VCD info: dumpfile d05_wave.vcd opened for output.
+PASS: du 256 buoc va quay vong 255 -> 0
+PASS: giu dem tai 255 va dem tiep
+PASS: reset giua chung
+PASS: enable xen ke
+D05 PASS: 578 lan kiem, 559 buoc Gray doi dung 1 bit
+05_VERIFICATION/testbench/d05_core_tb.sv:139: $finish called at 5786000 (1ps)

@@ -1,0 +1,133 @@
+{
+  "conclusion": "success",
+  "createdAt": "2026-10-31T16:39:26Z",
+  "headSha": "cc68d112c2f57bf3adb88cf69d710f78c689b153",
+  "jobs": [
+    {
+      "completedAt": "2026-10-31T16:39:44Z",
+      "conclusion": "success",
+      "databaseId": 124594534987,
+      "name": "1 - Mô phỏng và kiểm chứng RTL",
+      "startedAt": "2026-10-31T16:39:28Z",
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Lấy mã nguồn của đề tài",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Cài đặt Icarus Verilog",
+          "number": 3,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Chạy bộ kiểm thử tự động D05",
+          "number": 4,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Lưu gói kết quả mô phỏng",
+          "number": 5,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Lấy mã nguồn của đề tài",
+          "number": 10,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 11,
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/huahieu-may/D05-Gray-8bit/actions/runs/41220729337/job/124594534987"
+    },
+    {
+      "completedAt": "2026-10-31T16:42:12Z",
+      "conclusion": "success",
+      "databaseId": 124594601618,
+      "name": "2 - Thiết kế vật lý với LibreLane và SKY130",
+      "startedAt": "2026-10-31T16:39:46Z",
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Lấy mã nguồn của đề tài",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Cài Nix và cấu hình bộ nhớ đệm FOSSi",
+          "number": 3,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Khôi phục bộ nhớ đệm PDK đã cố định phiên bản",
+          "number": 4,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Chạy LibreLane 3.0.17 đã cố định phiên bản",
+          "number": 5,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Kiểm tra sản phẩm và thu thập chỉ số",
+          "number": 6,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Lưu gói kết quả thiết kế vật lý",
+          "number": 7,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Khôi phục bộ nhớ đệm PDK đã cố định phiên bản",
+          "number": 13,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Lấy mã nguồn của đề tài",
+          "number": 14,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 15,
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/huahieu-may/D05-Gray-8bit/actions/runs/41220729337/job/124594601618"
+    }
+  ],
+  "status": "completed",
+  "url": "https://github.com/huahieu-may/D05-Gray-8bit/actions/runs/41220729337"
+}

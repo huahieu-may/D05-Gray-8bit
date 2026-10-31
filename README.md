@@ -25,13 +25,13 @@ Chưa kiểm chứng CDC/metastability hay mạch sau chế tạo.
 
 ## Kết quả CI đã xác nhận
 
-[Cả hai job PASS – CI 41219250115](https://github.com/huahieu-may/D05-Gray-8bit/actions/runs/41219250115).
+[Cả hai job PASS – CI 41220729337](https://github.com/huahieu-may/D05-Gray-8bit/actions/runs/41220729337).
 
-[Bảng số liệu và nguồn báo cáo](07_TRACEABILITY/CI_RESULTS.md). GDS, layout và report đối chiếu nằm trong 06_GDSII/CI_41219250115/.
+[Bảng số liệu và nguồn báo cáo](07_TRACEABILITY/CI_RESULTS.md). GDS, layout và report đối chiếu nằm trong 06_GDSII/CI_41220729337/.
 
 ## Báo cáo nộp
 
 - [Báo cáo PDF — 15 trang](report/Bao_cao_D05.pdf)
 - [Báo cáo Word](report/Bao_cao_D05.docx)
 
-Cả hai bản dẫn đến CI 41219250115, commit tạo dữ liệu 0844411. Báo cáo phân biệt kết quả đã kiểm và các giới hạn còn mở.
+Cả hai bản dẫn đến CI 41220729337, mã phiên bản tạo dữ liệu cc68d11. Báo cáo phân biệt kết quả đã kiểm và các giới hạn còn mở.

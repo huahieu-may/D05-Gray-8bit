@@ -8,3 +8,5 @@ Lịch sử commit được giữ nguyên, không tạo lại các mốc đã qu
 - M5: cập nhật báo cáo Word/PDF 15 trang, link CI đầy đủ, kết quả A/B 30/49 và ảnh KLayout render từ artifact. File tại report/.
 
 Tên mốc mô tả công việc trong commit thực tế, không giả lập lịch sử hoàn thành từ trước.
+
+- Việt hóa tên quy trình, hai công việc và các bước tại cc68d11; lượt kiểm tra 41220729337 thành công. Cập nhật tên và đường dẫn trong báo cáo, giữ nguyên lịch sử cũ.

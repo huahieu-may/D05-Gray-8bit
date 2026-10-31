@@ -1,0 +1,17 @@
+Commit: cc68d112c2f57bf3adb88cf69d710f78c689b153
+Date UTC: 2026-10-31T16:40:58Z
+LibreLane source: 64ef80802d3d189b476636d2a6b17888c03304ee
+SKY130 expected revision: 8afc8346a57fe1ab7934ba5a6056ea8b43078e71
+LibreLane v3.0.17
+
+Copyright ©2025-2026 LibreLane Contributors
+
+Adapted from OpenLane 2.0
+Copyright ©2020-2025 Efabless Corporation
+
+Available under the Apache License, version 2. Included with the source code,
+but you can also get a copy at https://www.apache.org/licenses/LICENSE-2.0
+
+Included tools and utilities may be distributed under stricter licenses.
+Yosys 0.62 (git sha1 7326bb7d6641500ecb285c291a54a662cb1e76cf, clang++ 21.1.2 -fPIC -O3)
+dcf36133a369abc8f3c5e5738cd4d82e4903c0e0 
