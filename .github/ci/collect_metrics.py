@@ -1,4 +1,4 @@
-"""Read the exact CI run and fail on missing physical products."""
+"""Đọc đúng lượt kiểm tra tự động và phát hiện sản phẩm vật lý bị thiếu."""
 import json
 import math
 import pathlib
@@ -10,13 +10,13 @@ gds = run / "final/gds/d05_core.gds"
 metrics = run / "final/metrics.json"
 for p in [gds, metrics, run / "resolved.json"]:
     if not p.is_file() or not p.stat().st_size:
-        raise SystemExit(f"Missing or empty required CI product: {p}")
+        raise SystemExit(f"Sản phẩm bắt buộc bị thiếu hoặc rỗng: {p}")
 if gds.read_bytes()[:4] != bytes.fromhex("00060002"):
-    raise SystemExit("Invalid GDSII HEADER record")
+    raise SystemExit("Bản ghi đầu tệp GDSII không hợp lệ")
 m = json.loads(metrics.read_text())
 cfg = json.loads((run / "resolved.json").read_text())
 if cfg["DESIGN_NAME"] != "d05_core":
-    raise SystemExit("Wrong physical top")
+    raise SystemExit("Tên khối thiết kế vật lý không đúng")
 keys = [
     "design__die__area", "design__core__area",
     "design__instance__count", "design__instance__area",
@@ -33,9 +33,9 @@ data = {k: m.get(k) for k in keys}
 data = {k: str(v) if isinstance(v, float) and not math.isfinite(v) else v for k,v in data.items()}
 (out / "metrics_summary.json").write_text(json.dumps(data, indent=2)+"\n")
 (out / "metrics_summary.md").write_text(
-    "# D05 CI physical metrics\n\nSource: physical_design/runs/CI/final/metrics.json\n\n"
-    "| Metric | Value |\n|---|---:|\n" +
+    "# Chỉ số thiết kế vật lý D05 trên hệ thống kiểm tra tự động\n\nNguồn: physical_design/runs/CI/final/metrics.json\n\n"
+    "| Chỉ số | Giá trị |\n|---|---:|\n" +
     "".join(f"| {k} | {v} |\n" for k, v in data.items()) +
-    "\nAggregate setup/hold may use different PVT corners. See per-corner STA reports.\n")
+    "\nBiên thời gian thiết lập và giữ tổng hợp có thể thuộc các góc PVT khác nhau. Xem báo cáo phân tích thời gian của từng góc.\n")
 print((out / "metrics_summary.md").read_text())
-print(f"Verified GDS: {gds} ({gds.stat().st_size} bytes)")
+print(f"Đã kiểm tra tệp GDS: {gds} ({gds.stat().st_size} byte)")

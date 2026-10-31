@@ -6,14 +6,14 @@ Top: d05_core. Clock 10 ns; reset đồng bộ tích cực thấp; enable cho ph
 Trạng thái là 8 bit nhị phân, đầu ra Gray = B XOR (B >> 1).
 
 ## Chạy và kiểm tra
-Workflow: .github/workflows/rtl2gds.yml (D05 - RTL to GDSII).
-Job 1 chạy testbench tự kiểm: 578 phép kiểm, 559 bước Gray thay đúng một bit.
-Job 2 chạy LibreLane 3.0.17, sky130A / sky130_fd_sc_hd, từ chính RTL trong repo.
+Quy trình tự động: .github/workflows/rtl2gds.yml (D05 - Từ RTL đến bản vẽ GDSII).
+Công việc 1 chạy testbench tự kiểm: 578 phép kiểm, 559 bước Gray thay đúng một bit.
+Công việc 2 chạy LibreLane 3.0.17, sky130A / sky130_fd_sc_hd, từ chính RTL trong repo.
 Cấu hình: physical_design/config.json; die 100 × 100 µm, placement target 45%.
 
-Vào Actions, mở lượt chạy tương ứng commit. Artifacts:
-- D05-simulation-results: log, waveform, phiên bản mô phỏng.
-- D05-rtl2gds-results: GDS, metrics, báo cáo STA/power/DRC/LVS, log, config và provenance.
+Vào Actions, mở lượt chạy tương ứng commit. Các gói kết quả:
+- D05 - Kết quả mô phỏng: log, waveform, phiên bản mô phỏng.
+- D05 - Kết quả thiết kế vật lý: GDS, metrics, báo cáo STA/power/DRC/LVS, log, config và provenance.
 
 Các số đo cũ trong hồ sơ nguồn được giữ để truy vết, không thay thế kết quả CI mới.
 Kết quả cuối cùng và link CI sẽ được ghi tại 07_TRACEABILITY/CI_RESULTS.md sau khi kiểm tra.
