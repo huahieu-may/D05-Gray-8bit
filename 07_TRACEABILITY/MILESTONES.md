@@ -4,7 +4,7 @@ Lịch sử commit được giữ nguyên, không tạo lại các mốc đã qu
 - 451df24 (30/10/2026): đưa hồ sơ đặc tả, RTL và testbench đã thực hiện lên repo. M1 và M2 nằm trong cùng lần nhập nguồn.
 - 8d925df (31/10/2026): bổ sung CI mô phỏng RTL.
 - M3 (bổ sung hiện tại): đưa cấu hình vật lý và workflow LibreLane lên CI; kiểm tra GDS và lưu artifacts.
-- M4: ghi số liệu và phân tích đúng lượt CI sau khi chạy.
-- M5: cập nhật báo cáo Word/PDF và thông tin tái lập sau khi đối chiếu artifacts.
+- M4 (7ec3ff7): ghi số liệu CI 41219250115, GDS và báo cáo STA/power/DRC/LVS thật.
+- M5: cập nhật báo cáo Word/PDF 15 trang, link CI đầy đủ, kết quả A/B 30/49 và ảnh KLayout render từ artifact. File tại report/.
 
 Tên mốc mô tả công việc trong commit thực tế, không giả lập lịch sử hoàn thành từ trước.
