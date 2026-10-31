@@ -22,3 +22,9 @@ Các lần chạy vật lý trên máy cá nhân không được coi là lần c
 ## Phạm vi
 Chứng minh chức năng RTL và đọc kết quả implementation của bộ đếm.
 Chưa kiểm chứng CDC/metastability hay mạch sau chế tạo.
+
+## Kết quả CI đã xác nhận
+
+[Cả hai job PASS – CI 41219250115](https://github.com/huahieu-may/D05-Gray-8bit/actions/runs/41219250115).
+
+[Bảng số liệu và nguồn báo cáo](07_TRACEABILITY/CI_RESULTS.md). GDS, layout và report đối chiếu nằm trong 06_GDSII/CI_41219250115/.

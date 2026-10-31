@@ -1,0 +1,8 @@
+"Yeu cau","Thiet ke","Bang chung","Gioi han"
+"Đếm 8 bit, modulo 256","binary_state, phép +8'd1","E1, E2; C1","RTL một miền clock."
+"Reset / enable đúng ưu tiên","always_ff và binary_next","TC-01…TC-06; E1; C1","Điều khiển đồng bộ."
+"Gray một bit, đủ chu kỳ","B XOR (B>>1); popcount và seen_gray","TC-03, Hình 2–3; E1; C1","Không áp dụng khi reset."
+"Có hai kiến trúc để so sánh","d05_core, d05_direct_gray","E3; C2","Số cell generic cùng bản Yosys."
+"Thực hiện thiết kế vật lý","Core d05_core, sky130A","E4…E7; C3","Cùng commit CI; xem điều kiện STA."
+"Giao diện và tích hợp","5 cổng/19 bit; đề xuất pin tại mục 2","RTL, bảng giao diện; E2","Wrapper chưa triển khai."
+"Repo, lịch sử và CI","Lịch sử thật; workflow 2 job","E1, link bìa / Phụ lục A","Public; link CI ở bìa."

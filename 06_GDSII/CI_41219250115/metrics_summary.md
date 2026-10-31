@@ -1,0 +1,28 @@
+# D05 CI physical metrics
+
+Source: physical_design/runs/CI/final/metrics.json
+
+| Metric | Value |
+|---|---:|
+| design__die__area | 10000 |
+| design__core__area | 6761.48 |
+| design__instance__count | 1778 |
+| design__instance__area | 6761.48 |
+| design__instance__count__stdcell | 154 |
+| design__instance__area__stdcell | 898.362 |
+| design__instance__count__class:sequential_cell | 8 |
+| design__instance__area__class:sequential_cell | 170.163 |
+| design__instance__count__class:fill_cell | 1624 |
+| design__instance__count__class:tap_cell | 90 |
+| design__instance__utilization__stdcell | 0.132865 |
+| route__wirelength | 1291 |
+| route__wirelength__max | 85.08 |
+| timing__setup__ws | 5.034054204864353 |
+| timing__hold__ws | 0.11990142551530171 |
+| magic__drc_error__count | 0 |
+| klayout__drc_error__count | 0 |
+| design__lvs_error__count | 0 |
+| antenna__violating__nets | 0 |
+| antenna__violating__pins | 0 |
+
+Aggregate setup/hold may use different PVT corners. See per-corner STA reports.

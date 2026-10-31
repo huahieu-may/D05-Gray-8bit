@@ -1,0 +1,133 @@
+{
+  "conclusion": "success",
+  "createdAt": "2026-10-31T16:20:57Z",
+  "headSha": "0844411af12d807b0765adb24ae5936f2af12d19",
+  "jobs": [
+    {
+      "completedAt": "2026-10-31T16:21:12Z",
+      "conclusion": "success",
+      "databaseId": 124590171021,
+      "name": "1 - RTL simulation",
+      "startedAt": "2026-10-31T16:20:59Z",
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run actions/checkout@v6",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Install Icarus Verilog",
+          "number": 3,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run self-checking D05 testbench",
+          "number": 4,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run actions/upload-artifact@v7",
+          "number": 5,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@v6",
+          "number": 10,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 11,
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/huahieu-may/D05-Gray-8bit/actions/runs/41219250115/job/124590171021"
+    },
+    {
+      "completedAt": "2026-10-31T16:23:53Z",
+      "conclusion": "success",
+      "databaseId": 124590231334,
+      "name": "2 - LibreLane SKY130 RTL-to-GDSII",
+      "startedAt": "2026-10-31T16:21:14Z",
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run actions/checkout@v6",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Install Nix and FOSSi binary cache",
+          "number": 3,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Restore pinned PDK cache",
+          "number": 4,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run pinned LibreLane 3.0.17",
+          "number": 5,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Verify actual products and collect metrics",
+          "number": 6,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run actions/upload-artifact@v7",
+          "number": 7,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Restore pinned PDK cache",
+          "number": 13,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@v6",
+          "number": 14,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 15,
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/huahieu-may/D05-Gray-8bit/actions/runs/41219250115/job/124590231334"
+    }
+  ],
+  "status": "completed",
+  "url": "https://github.com/huahieu-may/D05-Gray-8bit/actions/runs/41219250115"
+}
