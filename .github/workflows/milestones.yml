@@ -1,5 +1,6 @@
 name: D05 - Milestone Checks
-run-name: ${{ inputs.stage == 'M1' && 'M1: Đặc tả và kiến trúc D05' || inputs.stage == 'M2' && 'M2: RTL và kiểm chứng chức năng D05' || inputs.stage == 'M4' && 'M4: Phân tích tổng hợp, thời gian, công suất, DRC và LVS' || 'M5: Báo cáo và bằng chứng D05' }}
+run-name: >-
+  ${{ inputs.stage == 'M1' && 'M1: Đặc tả và kiến trúc D05' || inputs.stage == 'M2' && 'M2: RTL và kiểm chứng chức năng D05' || inputs.stage == 'M4' && 'M4: Phân tích tổng hợp, thời gian, công suất, DRC và LVS' || 'M5: Báo cáo và bằng chứng D05' }}
 on:
   workflow_dispatch:
     inputs:
