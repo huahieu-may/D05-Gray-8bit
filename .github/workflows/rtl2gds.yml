@@ -1,4 +1,5 @@
-name: D05 - Từ RTL đến bản vẽ GDSII
+name: D05 - RTL to GDSII
+run-name: ${{ inputs.moc || github.event.head_commit.message }}
 on:
   push:
     branches: [main]
@@ -8,6 +9,11 @@ on:
       - '*.md'
   pull_request:
   workflow_dispatch:
+    inputs:
+      moc:
+        description: Run title
+        type: string
+        default: "M3: Chạy flow RTL-to-GDSII trên GitHub Actions"
 permissions:
   contents: read
 env:
@@ -18,17 +24,16 @@ env:
   SKY130_PDK_VERSION: 8afc8346a57fe1ab7934ba5a6056ea8b43078e71
 jobs:
   simulation:
-    name: 1 - Mô phỏng và kiểm chứng RTL
+    name: 1 - RTL simulation
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
-      - name: Lấy mã nguồn của đề tài
-        uses: actions/checkout@v6
-      - name: Cài đặt Icarus Verilog
+      - uses: actions/checkout@v6
+      - name: Install Icarus Verilog
         run: |
           sudo apt-get update
           sudo apt-get install -y iverilog
-      - name: Chạy bộ kiểm thử tự động D05
+      - name: Run self-checking D05 testbench
         shell: bash
         run: |
           set -euo pipefail
@@ -39,48 +44,45 @@ jobs:
           vvp sim.vvp | tee simulation.log
           if grep -qiE 'FATAL|mismatch|\bFAIL\b' simulation.log; then exit 1; fi
           grep -F 'D05 PASS: 578 lan kiem, 559 buoc Gray doi dung 1 bit' simulation.log
-      - name: Lưu gói kết quả mô phỏng
-        uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: D05 - Kết quả mô phỏng
+          name: D05-simulation-results
           path: build/ci/
           retention-days: 30
   rtl2gds:
-    name: 2 - Thiết kế vật lý với LibreLane và SKY130
+    name: 2 - LibreLane SKY130 RTL-to-GDSII
     runs-on: ubuntu-24.04
     needs: simulation
     timeout-minutes: 90
     env:
       PDK_ROOT: ${{ github.workspace }}/.ci-pdk
     steps:
-      - name: Lấy mã nguồn của đề tài
-        uses: actions/checkout@v6
-      - name: Cài Nix và cấu hình bộ nhớ đệm FOSSi
+      - uses: actions/checkout@v6
+      - name: Install Nix and FOSSi binary cache
         uses: cachix/install-nix-action@d9186cbdca7adedf113a159fa91f725a27866771
         with:
           extra_nix_config: |
             extra-substituters = https://nix-cache.fossi-foundation.org
             extra-trusted-public-keys = nix-cache.fossi-foundation.org:3+K59iFwXqKsL7BNu6Guy0v+uTlwsxYQxjspXzqLYQs=
             extra-experimental-features = nix-command flakes
-      - name: Khôi phục bộ nhớ đệm PDK đã cố định phiên bản
+      - name: Restore pinned PDK cache
         uses: actions/cache@v4
         with:
           path: .ci-pdk
           key: sky130-${{ env.SKY130_PDK_VERSION }}
-      - name: Chạy LibreLane 3.0.17 đã cố định phiên bản
+      - name: Run pinned LibreLane 3.0.17
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p build/physical
           nix develop "github:librelane/librelane/$LIBRELANE_REV" --command bash .github/ci/run_physical.sh 2>&1 | tee build/physical/flow_console.log
-      - name: Kiểm tra sản phẩm và thu thập chỉ số
+      - name: Verify actual products and collect metrics
         run: python3 .github/ci/collect_metrics.py physical_design/runs/CI build/physical
-      - name: Lưu gói kết quả thiết kế vật lý
-        uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: D05 - Kết quả thiết kế vật lý
+          name: D05-rtl2gds-results
           path: |
             build/physical/
             physical_design/runs/CI/

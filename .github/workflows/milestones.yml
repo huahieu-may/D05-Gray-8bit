@@ -1,0 +1,28 @@
+name: D05 - Milestone Checks
+run-name: ${{ inputs.stage == 'M1' && 'M1: Đặc tả và kiến trúc D05' || inputs.stage == 'M2' && 'M2: RTL và kiểm chứng chức năng D05' || inputs.stage == 'M4' && 'M4: Phân tích tổng hợp, thời gian, công suất, DRC và LVS' || 'M5: Báo cáo và bằng chứng D05' }}
+on:
+  workflow_dispatch:
+    inputs:
+      stage:
+        description: Milestone to verify
+        type: choice
+        required: true
+        options: [M1, M2, M4, M5]
+permissions:
+  contents: read
+jobs:
+  check:
+    name: Verify milestone deliverables
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install Icarus Verilog
+        if: inputs.stage == 'M2'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y iverilog
+      - name: Check existing milestone deliverables
+        env:
+          D05_STAGE: ${{ inputs.stage }}
+        run: python3 .github/ci/check_milestone.py

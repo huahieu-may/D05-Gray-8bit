@@ -10,3 +10,5 @@ Lịch sử commit được giữ nguyên, không tạo lại các mốc đã qu
 Tên mốc mô tả công việc trong commit thực tế, không giả lập lịch sử hoàn thành từ trước.
 
 - Việt hóa tên quy trình, hai công việc và các bước tại cc68d11; lượt kiểm tra 41220729337 thành công. Cập nhật tên và đường dẫn trong báo cáo, giữ nguyên lịch sử cũ.
+
+- Tên mốc được ghi bằng tiếng Việt ở tiêu đề lượt kiểm tra. M1/M2 kiểm tra lại hồ sơ có sẵn; lịch sử nhập nguồn vẫn giữ nguyên.
