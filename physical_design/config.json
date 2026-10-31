@@ -1,0 +1,18 @@
+{
+  "DESIGN_NAME": "d05_core",
+  "VERILOG_FILES": [
+    "dir::../04_IMPLEMENTATION/rtl/d05_core.sv"
+  ],
+  "CLOCK_PORT": "clk",
+  "CLOCK_PERIOD": 10,
+  "FP_SIZING": "absolute",
+  "DIE_AREA": [
+    0,
+    0,
+    100,
+    100
+  ],
+  "PL_TARGET_DENSITY_PCT": 45,
+  "PDK": "sky130A",
+  "STD_CELL_LIBRARY": "sky130_fd_sc_hd"
+}

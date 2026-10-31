@@ -1,0 +1,86 @@
+name: D05 - RTL to GDSII
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'report/**'
+      - '07_TRACEABILITY/**'
+      - '*.md'
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+env:
+  MA_DE: D05
+  DESIGN_NAME: d05_core
+  CONFIG: physical_design/config.json
+  LIBRELANE_REV: 64ef80802d3d189b476636d2a6b17888c03304ee
+  SKY130_PDK_VERSION: 8afc8346a57fe1ab7934ba5a6056ea8b43078e71
+jobs:
+  simulation:
+    name: 1 - RTL simulation
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install Icarus Verilog
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y iverilog
+      - name: Run self-checking D05 testbench
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/ci
+          iverilog -V > build/ci/tool_versions.txt 2>&1
+          iverilog -g2012 -s d05_core_tb -o build/ci/sim.vvp 04_IMPLEMENTATION/rtl/d05_core.sv 05_VERIFICATION/testbench/d05_core_tb.sv
+          cd build/ci
+          vvp sim.vvp | tee simulation.log
+          if grep -qiE 'FATAL|mismatch|\bFAIL\b' simulation.log; then exit 1; fi
+          grep -F 'D05 PASS: 578 lan kiem, 559 buoc Gray doi dung 1 bit' simulation.log
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: D05-simulation-results
+          path: build/ci/
+          retention-days: 30
+  rtl2gds:
+    name: 2 - LibreLane SKY130 RTL-to-GDSII
+    runs-on: ubuntu-24.04
+    needs: simulation
+    timeout-minutes: 90
+    env:
+      PDK_ROOT: ${{ github.workspace }}/.ci-pdk
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install Nix and FOSSi binary cache
+        uses: cachix/install-nix-action@d9186cbdca7adedf113a159fa91f725a27866771
+        with:
+          extra_nix_config: |
+            extra-substituters = https://nix-cache.fossi-foundation.org
+            extra-trusted-public-keys = nix-cache.fossi-foundation.org:3+K59iFwXqKsL7BNu6Guy0v+uTlwsxYQxjspXzqLYQs=
+            extra-experimental-features = nix-command flakes
+      - name: Restore pinned PDK cache
+        uses: actions/cache@v4
+        with:
+          path: .ci-pdk
+          key: sky130-${{ env.SKY130_PDK_VERSION }}
+      - name: Run pinned LibreLane 3.0.17
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/physical
+          nix develop "github:librelane/librelane/$LIBRELANE_REV" --command bash .github/ci/run_physical.sh 2>&1 | tee build/physical/flow_console.log
+      - name: Verify actual products and collect metrics
+        run: python3 .github/ci/collect_metrics.py physical_design/runs/CI build/physical
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: D05-rtl2gds-results
+          path: |
+            build/physical/
+            physical_design/runs/CI/
+            physical_design/config.json
+            04_IMPLEMENTATION/rtl/d05_core.sv
+          retention-days: 30
+          if-no-files-found: warn
