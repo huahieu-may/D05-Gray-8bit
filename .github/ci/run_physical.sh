@@ -19,4 +19,8 @@ meta.update(commit=sha, utc=datetime.datetime.now(datetime.timezone.utc).isoform
             ci_url=f"https://github.com/{meta['GITHUB_REPOSITORY']}/actions/runs/{meta['GITHUB_RUN_ID']}")
 (p / "provenance.json").write_text(json.dumps(meta, indent=2)+"\n")
 PY
-librelane --pdk-root "$PDK_ROOT" --pdk sky130A --tag CI "$CONFIG"
+mkdir -p build/physical/generic
+for top in d05_core d05_direct_gray; do
+  yosys -l "build/physical/generic/$top.log" -p "read_verilog -sv 04_IMPLEMENTATION/rtl/$top.sv; synth -top $top; stat; write_verilog build/physical/generic/$top.v"
+done
+librelane --pdk-root "$PDK_ROOT" --pdk sky130A --run-tag CI "$CONFIG"
